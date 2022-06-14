@@ -3,29 +3,34 @@ CREATE TABLE users (
 	"name" TEXT NOT NULL,
 	"email" TEXT UNIQUE NOT NULL,
 	"password" TEXT NOT NULL,
-	"picture" TEXT NOT NULL
+	"picture" TEXT NOT NULL,
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE posts (
 	"id" SERIAL PRIMARY KEY,
 	"text" TEXT,
 	"link" TEXT NOT NULL,
-	"userId" INTEGER NOT NULL REFERENCES "users"("id")
+	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "userLikes" (
 	"id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
-	"postId" INTEGER NOT NULL REFERENCES "posts"("id")
+	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE hashtags (
 	"id" SERIAL PRIMARY KEY,
-	"name" TEXT UNIQUE NOT NULL
+	"name" TEXT UNIQUE NOT NULL,
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE "postHashtags" (
 	"id" SERIAL PRIMARY KEY,
 	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
-	"hashtagId" INTEGER NOT NULL REFERENCES "hashtags"("id")
+	"hashtagId" INTEGER NOT NULL REFERENCES "hashtags"("id"),
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
