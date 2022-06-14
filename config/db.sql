@@ -8,8 +8,9 @@ CREATE TABLE users (
 
 CREATE TABLE posts (
 	"id" SERIAL PRIMARY KEY,
-	"text" TEXT NOT NULL,
-	"link" TEXT
+	"text" TEXT,
+	"link" TEXT NOT NULL,
+	"userId" INTEGER NOT NULL REFERENCES "users"("id")
 );
 
 CREATE TABLE "userLikes" (

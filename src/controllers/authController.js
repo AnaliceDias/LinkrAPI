@@ -29,9 +29,6 @@ export async function postSignUp(req, res) {
 }
 
 export async function postSignIn(req, res) {
-  const u = res.locals.user
-  console.log(u)
-  
   const { email, password } = req.body
   try {
     // check if both email and password are corrects
