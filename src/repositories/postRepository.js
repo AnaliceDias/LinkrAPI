@@ -10,8 +10,31 @@ async function insertPost(text, link, userId) {
   );
 }
 
+async function getPostById(postId) {
+  return db.query(
+    `
+    SELECT * FROM posts
+    WHERE id = $1
+  
+  `,
+    [postId]
+  );
+}
+
+async function deletePost(postId) {
+  return db.query(
+    `
+    DELETE FROM posts
+    WHERE id = $1
+  `,
+    [postId]
+  );
+}
+
 const postRepository = {
-  insertPost
+  insertPost,
+  getPostById,
+  deletePost
 };
 
 export default postRepository;

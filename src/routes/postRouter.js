@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { publishPost } from "../controllers/postController.js";
+import { deletePost, publishPost } from "../controllers/postController.js";
 import authValidator from "../middlewares/authValidator.js";
 import schemaValidator from "../middlewares/schemaValidator.js";
 import postSchema from "../schemas/postSchema.js";
@@ -12,5 +12,6 @@ postRouter.post(
   schemaValidator(postSchema),
   publishPost
 );
+postRouter.delete("/timeline", authValidator, deletePost);
 
 export default postRouter;

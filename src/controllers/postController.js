@@ -15,3 +15,21 @@ export async function publishPost(req, res) {
     res.sendStatus(500);
   }
 }
+
+export async function deletePost(req, res) {
+  const userId = res.locals.user;
+  const { postId } = req.body;
+
+  try {
+    const post = await postRepository.getPostById(postId);
+    if (!post.rows[0]) return res.sendStatus(404);
+    else if (userId !== post.rows[0].userId) return res.sendStatus(401);
+
+    await postRepository.deletePost(postId);
+
+    res.status(204).send("Deletado com sucesso");
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
+}
