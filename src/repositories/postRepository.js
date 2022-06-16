@@ -31,10 +31,21 @@ async function deletePost(postId) {
   );
 }
 
+async function getTimeline() {
+  return db.query(
+    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name 
+    FROM posts p
+    JOIN users u
+    ON u.id=p."usersId"
+    ORDER BY id DESC`
+  );
+}
+
 const postRepository = {
   insertPost,
   getPostById,
-  deletePost
+  deletePost,
+  getTimeline
 };
 
 export default postRepository;
