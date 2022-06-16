@@ -1,4 +1,5 @@
 import postRepository from "../repositories/postRepository.js";
+import getMetaData from "metadata-scraper";
 
 
 export async function publishPost(req, res) {
@@ -31,7 +32,7 @@ export async function getTimeline (req, res) {
           }
       }
 
-      const allPosts = limitPosts.map(post => {
+      const allPosts = limitPosts.map(async post => {
         const data = await getMetaData(post.link);
 
         const newPost = {
