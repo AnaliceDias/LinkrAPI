@@ -1,12 +1,12 @@
 import db from "../../config/db.js";
 
-async function insertPost(text, link, userId) {
+async function insertPost(id , text, link, userId) {
   return db.query(
     `
-    INSERT INTO posts (text, link, "userId") 
-    VALUES ($1, $2, $3)
+    INSERT INTO posts (id , text, link, "userId") 
+    VALUES ($1, $2, $3 , $4)
   `,
-    [text, link, userId]
+    [id , text, link, userId]
   );
 }
 
