@@ -1,9 +1,14 @@
 import { Router } from "express";
-import { getTimeline, publishPost } from "../controllers/postController.js";
+
+import {
+  deletePost,
+  publishPost,
+  getTimeline
+} from "../controllers/postController.js";
+
 import authValidator from "../middlewares/authValidator.js";
 import schemaValidator from "../middlewares/schemaValidator.js";
 import postSchema from "../schemas/postSchema.js";
-
 
 const postRouter = Router();
 
@@ -13,11 +18,8 @@ postRouter.post(
   schemaValidator(postSchema),
   publishPost
 );
+postRouter.delete("/timeline", authValidator, deletePost);
 
-postRouter.get(
-  "/timeline", 
-  getTimeline
-);
-
+postRouter.get("/timeline", getTimeline);
 
 export default postRouter;
