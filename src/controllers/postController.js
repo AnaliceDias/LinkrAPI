@@ -40,31 +40,19 @@ export async function getTimeline(req, res) {
     const postsDB = await postRepository.getTimeline();
     const posts = postsDB.rows;
 
-    const limitPostNumber = 20;
-    const limitPosts = [];
+    const newPosts = [];
 
-    if (posts.length > limitPostNumber) {
-      for (let i = 0; i < limitPostNumber; i++) {
-        limitPosts.push(posts[i]);
-      }
-    }
-
-    const allPosts = limitPosts.map(async post => {
+    for (let post of posts) {
       const data = await getMetaData(post.link);
-
-      const newPost = {
-        name: post.name,
-        link: post.link,
-        coment: post.text,
+      newPosts.push({
+        ...post,
         title: data.title,
         description: data.description,
         image: data.image
-      };
+      });
+    }
 
-      return newPost;
-    });
-
-    res.send(allPosts);
+    res.send(newPosts);
   } catch (error) {
     res.sendStatus(500);
     console.log("There's something wrong in postController: " + error);
