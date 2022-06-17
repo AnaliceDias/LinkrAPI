@@ -5,7 +5,7 @@ const postSchema = Joi.object({
   link: Joi.string()
     .uri()
     .required()
-    .pattern(/^http?s:\/\/(.*)$/)
+    .pattern(/^https?:\/\/(.*)$/)
 });
 
 export default postSchema;
