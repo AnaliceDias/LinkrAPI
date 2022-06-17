@@ -1,5 +1,3 @@
-import db from '../../config/db.js';
-
 import userRepository from '../repositories/userRepository.js';
 import likeRepository from '../repositories/likeRepository.js';
 
@@ -27,12 +25,27 @@ export async function checkPostIsLiked(req, res){
 
     try {
         const query = await likeRepository.checkLike(userId, postId);
-        if (!query.rows[0]) return res.status(200).send({isLiked: false});
-        else return res.status(200).send({isLiked: true});
+        const username = await userRepository.getUserName(userId);
+        
+        if (!query.rows[0]) return res.status(200).send({username:username.rows[0].name, isLiked: false});
+        else return res.status(200).send({username:username.rows[0].name, isLiked: true});
 
     } catch (e) {
         console.error('Could not check like post ' + e);
         return res.sendStatus(500);
     }
 
+}
+
+export async function getLikeCount(req, res){
+    const { postId } = req.params;
+    try {
+        const query = await likeRepository.countLikes(postId);
+        let users =  query.rows.map((e)=> e.name);       
+        return res.status(200).send({usersLiked: users});       
+
+    } catch (e) {
+        console.error('Could not get count of likes' + e);
+        return res.sendStatus(500);
+    }
 }
