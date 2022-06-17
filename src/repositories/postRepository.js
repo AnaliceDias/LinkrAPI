@@ -15,7 +15,7 @@ async function getTimeline() {
     `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name 
     FROM posts p
     JOIN users u
-    ON u.id=p."usersId"
+    ON u.id=p."userId"
     ORDER BY id DESC`)
 }
 
