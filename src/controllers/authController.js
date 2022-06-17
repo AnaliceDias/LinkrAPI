@@ -36,8 +36,7 @@ export async function postSignIn(req, res) {
     if (!user.rows[0] || !bcrypt.compareSync(password, user.rows[0].password)) {
       return res.sendStatus(401);
     }
-    const image = user.rows[0].picture;
-
+    
     // create new token
 
     const data = { userId: user.rows[0].id }
