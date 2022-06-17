@@ -41,11 +41,13 @@ export async function postSignIn(req, res) {
     const data = { userId: user.rows[0].id }
     const key = process.env.JWT_KEY
     const config = { expiresIn: 60 * 60 } // 60 minutes
-
+    
     const token = jwt.sign(data, key, config)
+    const image = user.rows[0].picture
 
-    res.status(200).send(token)
+    res.status(200).send({token, image})
   } catch (e) {
+    console.log(e)
     res.sendStatus(500)
   }
 }

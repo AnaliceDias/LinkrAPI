@@ -10,6 +10,8 @@ if (process.env.MODE === "PROD") {
   configDatabase.ssl = { rejectUnauthorized: false }
 }
 
+console.log("postgres connected")
+
 const db = new Pool(configDatabase)
 
 export default db
