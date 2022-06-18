@@ -21,6 +21,18 @@ async function getPostById(postId) {
   );
 }
 
+async function getUserPosts(userId) {
+  return db.query(
+    `
+    SELECT * FROM posts
+    JOIN users ON posts."userId" = users.id
+    WHERE users.id = $1
+  
+  `,
+    [userId]
+  );
+}
+
 async function deletePost(postId) {
   return db.query(
     `
@@ -46,7 +58,8 @@ const postRepository = {
   insertPost,
   getPostById,
   deletePost,
-  getTimeline
+  getTimeline,
+  getUserPosts
 };
 
 export default postRepository;
