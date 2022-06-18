@@ -42,11 +42,16 @@ async function getTimeline() {
   );
 }
 
+async function updatePost(id, text) {
+  return db.query(`UPDATE posts SET text = $1 WHERE id = $2`, [text, id]);
+}
+
 const postRepository = {
   insertPost,
   getPostById,
   deletePost,
-  getTimeline
+  getTimeline,
+  updatePost,
 };
 
 export default postRepository;
