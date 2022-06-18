@@ -1,8 +1,8 @@
 import postRepository from "../repositories/postRepository.js";
 import getMetaData from "metadata-scraper";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 
-export function createPostId(req, res, next){
+export function createPostId(req, res, next) {
   res.locals.postId = uuid();
   next();
 }
@@ -15,7 +15,7 @@ export async function publishPost(req, res) {
   if (text === "") text = null;
 
   try {
-    await postRepository.insertPost(postId , text, link, userId);
+    await postRepository.insertPost(postId, text, link, userId);
     res.status(201).send("Post publicado com sucesso.");
   } catch (error) {
     console.log(error);
@@ -25,7 +25,7 @@ export async function publishPost(req, res) {
 
 export async function deletePost(req, res) {
   const userId = res.locals.user;
-  const { postId } = req.body;
+  const { postId } = req.params;
 
   try {
     const post = await postRepository.getPostById(postId);
@@ -56,7 +56,6 @@ export async function getTimeline(req, res) {
         description: data.description,
         image: data.image
       });
-      
     }
 
     res.send(newPosts);
