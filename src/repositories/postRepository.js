@@ -1,12 +1,12 @@
 import db from "../../config/db.js";
 
-async function insertPost(id , text, link, userId) {
+async function insertPost(id, text, link, userId) {
   return db.query(
     `
     INSERT INTO posts (id , text, link, "userId") 
     VALUES ($1, $2, $3 , $4)
   `,
-    [id , text, link, userId]
+    [id, text, link, userId]
   );
 }
 
@@ -33,7 +33,7 @@ async function deletePost(postId) {
 
 async function getTimeline() {
   return db.query(
-    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name 
+    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
     FROM posts p
     JOIN users u
     ON u.id=p."userId"
@@ -42,11 +42,16 @@ async function getTimeline() {
   );
 }
 
+async function updatePost(id, text) {
+  return db.query(`UPDATE posts SET text = $1 WHERE id = $2`, [text, id]);
+}
+
 const postRepository = {
   insertPost,
   getPostById,
   deletePost,
-  getTimeline
+  getTimeline,
+  updatePost,
 };
 
 export default postRepository;
