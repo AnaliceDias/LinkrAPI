@@ -33,7 +33,7 @@ async function deletePost(postId) {
 
 async function getTimeline() {
   return db.query(
-    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name 
+    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture
     FROM posts p
     JOIN users u
     ON u.id=p."userId"

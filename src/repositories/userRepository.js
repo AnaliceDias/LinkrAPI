@@ -13,15 +13,25 @@ async function createUser(name, email, password, picture) {
   )
 }
 
+async function getUserName(userId){
+  return db.query(
+    `SELECT users.name FROM users WHERE users.id = $1`,
+    [userId]
+  )
+}
+
 async function getUserByCharacter(character){
    
     return db.query(`SELECT name, picture FROM users WHERE NAME LIKE $1`, [`${character}%`])
 }    
 
+
 const userRepository = {
   getUserByEmail,
   createUser,
+  getUserName,
   getUserByCharacter,
+
 }
 
 export default userRepository

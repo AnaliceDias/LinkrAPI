@@ -56,6 +56,7 @@ export async function getTimeline(req, res) {
         description: data.description,
         image: data.image
       });
+      
     }
 
     res.send(newPosts);
