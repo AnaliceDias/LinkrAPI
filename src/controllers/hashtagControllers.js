@@ -10,31 +10,28 @@ export async function identifyHashtags(req, res, next){
         hashtags.push(hashtag);
       }
     });
+    
     res.locals.hashtags = hashtags;
     next();
-    
   }
   
 export async function verifyHashtags(req, res, next){
     const hashtags = res.locals.hashtags;
-    hashtagRepository.getHashtags(hashtags);
 
-    // let hashtagWhere = [];
-    // let query = `SELECT * FROM hashtags WHERE `
-    
     if(hashtags.length === 0){
-      next();
+        next();
     }else{
-    //   hashtags.map(hashtag => {
-    //     hashtagWhere.push(`name='${hashtag}'`);
-    //   });
-    //   hashtagWhere = hashtagWhere.join(' or ');
-      
-    //   query = query + hashtagWhere;
-    //   console.log(query)
-      //res.locals.hashtagsToCreate
-      
-      next();
+        try{
+            let verifiedHashtags = await hashtagRepository.getHashtags(hashtags);
+            res.locals.hashtagsToCreate = verifiedHashtags.hashtagsToCreate;
+            res.locals.hashtagIds = verifiedHashtags.hashtagIds;
+
+            next();
+
+        }catch(err){
+            console.log(err);
+            res.statusSend(404);
+        }
     }
   }
   
