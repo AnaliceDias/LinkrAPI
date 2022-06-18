@@ -30,7 +30,7 @@ postRouter.post(
   publishPost
 );
 
-postRouter.delete("/timeline", authValidator, deletePost);
+postRouter.delete("/timeline/:postId", authValidator, deletePost);
 
 postRouter.get("/timeline", getTimeline);
 
