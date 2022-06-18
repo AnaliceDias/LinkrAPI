@@ -1,43 +1,53 @@
-import db from '../../config/db.js';
+import db from "../../config/db.js";
 
 async function createLike(userId, postId) {
-    return db.query(
-        `
+  return db.query(
+    `
     INSERT INTO "userLikes" ("userId", "postId")
     VALUES ($1, $2)`,
-        [userId, postId]
-    );
+    [userId, postId]
+  );
 }
 
 async function deleteLike(userId, postId) {
-    return db.query(
-        `DELETE FROM "userLikes" WHERE "userId" = $1 AND "postId" = $2`,
-        [userId, postId]
-    );
+  return db.query(
+    `DELETE FROM "userLikes" WHERE "userId" = $1 AND "postId" = $2`,
+    [userId, postId]
+  );
+}
+
+async function deleteLikesByPostId(postId) {
+  return db.query(
+    `
+        DELETE FROM "userLikes" WHERE "postId" = $1
+    `,
+    [postId]
+  );
 }
 
 async function checkLike(userId, postId) {
-    return db.query(
-        `SELECT * FROM "userLikes"         
+  return db.query(
+    `SELECT * FROM "userLikes"         
         WHERE "userId" = $1 AND "postId" = $2`,
-        [userId, postId]
-    );
+    [userId, postId]
+  );
 }
 
-async function countLikes(postId){
-    return db.query(
-        `SELECT u.name FROM users u 
+async function countLikes(postId) {
+  return db.query(
+    `SELECT u.name FROM users u 
         JOIN "userLikes" ul ON u.id = ul."userId" 
         WHERE ul."postId" = $1;`,
-        [postId]
-    );
+    [postId]
+  );
 }
 
 const likeRepository = {
-    createLike,
-    deleteLike,
-    checkLike,
-    countLikes
+  createLike,
+  deleteLike,
+  deleteLikesByPostId,
+  checkLike,
+  countLikes
 };
 
 export default likeRepository;
