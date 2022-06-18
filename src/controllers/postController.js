@@ -54,7 +54,7 @@ export async function getTimeline(req, res) {
         ...post,
         title: data.title,
         description: data.description,
-        image: data.image
+        image: data.image,
       });
     }
 
@@ -62,5 +62,27 @@ export async function getTimeline(req, res) {
   } catch (error) {
     res.sendStatus(500);
     console.log("There's something wrong in postController: " + error);
+  }
+}
+
+export async function updatePost(req, res) {
+  const { postId: id } = req.params;
+  const userId = res.locals.user;
+
+  try {
+    const post = await postRepository.getPostById(id);
+
+    // check if post exists and if the owner is the logged user
+    if (!post.rows[0]) {
+      return res.status(404).send("Post not found");
+    } else if (post.rows[0].userId !== userId) {
+      return res.status(401).send("User isn't the owner of the post");
+    }
+
+    await postRepository.updatePost(id, req.body.text);
+
+    res.sendStatus(201);
+  } catch (e) {
+    res.sendStatus(500);
   }
 }
