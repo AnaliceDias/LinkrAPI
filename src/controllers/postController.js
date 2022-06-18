@@ -1,6 +1,7 @@
 import postRepository from "../repositories/postRepository.js";
 import getMetaData from "metadata-scraper";
 import { v4 as uuid } from "uuid";
+import likeRepository from "../repositories/likeRepository.js";
 
 export function createPostId(req, res, next) {
   res.locals.postId = uuid();
@@ -24,14 +25,10 @@ export async function publishPost(req, res) {
 }
 
 export async function deletePost(req, res) {
-  const userId = res.locals.user;
   const { postId } = req.params;
 
   try {
-    const post = await postRepository.getPostById(postId);
-    if (!post.rows[0]) return res.sendStatus(404);
-    else if (userId !== post.rows[0].userId) return res.sendStatus(401);
-
+    await likeRepository.deleteLikesByPostId(postId);
     await postRepository.deletePost(postId);
 
     res.status(204).send("Deletado com sucesso");
