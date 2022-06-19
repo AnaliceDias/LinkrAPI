@@ -21,18 +21,6 @@ async function getPostById(postId) {
   );
 }
 
-async function getUserPosts(userId) {
-  return db.query(
-    `
-    SELECT * FROM posts
-    JOIN users ON posts."userId" = users.id
-    WHERE users.id = $1
-  
-  `,
-    [userId]
-  );
-}
-
 async function deletePost(postId) {
   return db.query(
     `
@@ -54,12 +42,24 @@ async function getTimeline() {
   );
 }
 
+async function getUserTimeline(userId) {
+  return db.query(
+    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
+    FROM posts p
+    JOIN users u
+    ON u.id=p."userId"
+    WHERE u.id = $1
+    ORDER BY p."createdAt" DESC
+    LIMIT 20`, [userId]
+  );
+}
+
 const postRepository = {
   insertPost,
   getPostById,
   deletePost,
   getTimeline,
-  getUserPosts
+  getUserTimeline
 };
 
 export default postRepository;

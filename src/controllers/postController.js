@@ -2,6 +2,7 @@ import postRepository from "../repositories/postRepository.js";
 import getMetaData from "metadata-scraper";
 import { v4 as uuid } from "uuid";
 import likeRepository from "../repositories/likeRepository.js";
+import userRepository from "../repositories/userRepository.js";
 
 export function createPostId(req, res, next) {
   res.locals.postId = uuid();
@@ -39,12 +40,16 @@ export async function deletePost(req, res) {
 }
 
 export async function getTimeline(req, res) {
+  const { id } = req.params;
   try {
-    const postsDB = await postRepository.getTimeline();
+    const userDb = await userRepository.getUserById(id);
+    const postsDB = !id ?  await postRepository.getTimeline() : await postRepository.getUserTimeline(id);
     const posts = postsDB.rows;
-
     const newPosts = [];
-
+    let user = null;
+    if(userDb.rowCount>0){
+      user = userDb.rows[0];
+    } 
     for (let post of posts) {
       const data = await getMetaData(post.link);
       newPosts.push({
@@ -55,7 +60,7 @@ export async function getTimeline(req, res) {
       });
     }
 
-    res.send(newPosts);
+    res.send({user, newPosts});
   } catch (error) {
     res.sendStatus(500);
     console.log("There's something wrong in postController: " + error);

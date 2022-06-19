@@ -39,5 +39,6 @@ postRouter.delete(
 );
 
 postRouter.get("/timeline", getTimeline);
+postRouter.get("/user/:id", getTimeline);
 
 export default postRouter;
