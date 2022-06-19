@@ -40,8 +40,27 @@ async function getHashtags(hashtags){
     return [];
 }
 
+async function insertHashtags(hashtagsNames){
+
+  try{
+    await hashtagsNames.map(hashtag => {
+      const newHashtag =  db.query(`
+      INSERT INTO hashtags (name)
+      VALUES ($1)` 
+      , [hashtag]);
+      
+    });
+
+    console.log("funfou");
+  }catch(err){
+    console.log(err);
+    return [];
+  }
+}
+
 const hashtagRepository = {
-    getHashtags
+    getHashtags,
+    insertHashtags
 };
 
 export default hashtagRepository;

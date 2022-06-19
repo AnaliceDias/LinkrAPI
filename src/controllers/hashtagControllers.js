@@ -37,10 +37,16 @@ export async function verifyHashtags(req, res, next){
   
 export async function createHashtag(req, res, next){
     const hashtags = res.locals.hashtags;
-  
+    const {hashtagsToCreate} = res.locals;
+
+    hashtagRepository.insertHashtags(hashtagsToCreate);
+
     if(hashtags.length === 0){
       next();
     }else{
+      //inserir no banco as hashtags novas
+      //solicitar ao banco od das novas hashtags
+      // adicionar esses ids na lista dos ids de hashtags
       
       next();
     }
