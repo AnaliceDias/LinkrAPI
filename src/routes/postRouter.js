@@ -38,6 +38,7 @@ postRouter.delete(
 );
 
 postRouter.get("/timeline", getTimeline);
+postRouter.get("/user/:id", getTimeline);
 
 postRouter.put("/timeline/:postId", authValidator, schemaValidator(updateSchema), updatePost);
 

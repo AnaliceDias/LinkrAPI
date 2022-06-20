@@ -42,6 +42,18 @@ async function getTimeline() {
   );
 }
 
+async function getUserTimeline(userId) {
+  return db.query(
+    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
+    FROM posts p
+    JOIN users u
+    ON u.id=p."userId"
+    WHERE u.id = $1
+    ORDER BY p."createdAt" DESC
+    LIMIT 20`, [userId]
+  );
+}
+
 async function updatePost(id, text) {
   return db.query(`UPDATE posts SET text = $1 WHERE id = $2`, [text, id]);
 }
@@ -51,6 +63,7 @@ const postRepository = {
   getPostById,
   deletePost,
   getTimeline,
+  getUserTimeline,
   updatePost,
 };
 

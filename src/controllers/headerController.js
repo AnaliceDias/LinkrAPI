@@ -5,7 +5,7 @@ export async function getUser(req,res){
     
     try{
         const user = await userRepository.getUserByCharacter(character)
-        console.log(user)
+        
         if(user.rows[0] === undefined){
             res.status(400).send("User not found")
         }
