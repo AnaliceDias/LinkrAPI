@@ -36,19 +36,20 @@ export async function postSignIn(req, res) {
     if (!user.rows[0] || !bcrypt.compareSync(password, user.rows[0].password)) {
       return res.sendStatus(401);
     }
-    const image = user.rows[0].picture;
-
+    
     // create new token
-    const data = { userId: user.rows[0].id }
-    const key = process.env.JWT_KEY
-    const config = { expiresIn: 60 * 60 } // 60 minutes
     
-    const token = jwt.sign(data, key, config)
+    const data = { userId: user.rows[0].id };
+    const key = process.env.JWT_KEY;
+    const config = { expiresIn: 60 * 60 }; // 60 minutes
     
-
-    res.status(200).send({token, image})
+    const token = jwt.sign(data, key, config);
+    const image = user.rows[0].picture;
+  
+    
+    res.status(200).send({ token, image, userId: data.userId });
   } catch (e) {
-    console.log(e)
-    res.sendStatus(500)
+    console.log(e);
+    res.sendStatus(500);
   }
 }

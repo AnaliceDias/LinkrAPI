@@ -3,8 +3,15 @@ import { Router } from "express";
 import {
   deletePost,
   publishPost,
-  getTimeline
+  getTimeline,
+  createPostId
 } from "../controllers/postController.js";
+
+import {
+  identifyHashtags,
+  verifyHashtags,
+  createHashtag
+} from "../controllers/hashtagControllers.js";
 
 import authValidator from "../middlewares/authValidator.js";
 import schemaValidator from "../middlewares/schemaValidator.js";
@@ -16,9 +23,14 @@ postRouter.post(
   "/timeline",
   authValidator,
   schemaValidator(postSchema),
+  createPostId,
+  identifyHashtags,
+  verifyHashtags,
+  createHashtag,
   publishPost
 );
-postRouter.delete("/timeline", authValidator, deletePost);
+
+postRouter.delete("/timeline/:postId", authValidator, deletePost);
 
 postRouter.get("/timeline", getTimeline);
 

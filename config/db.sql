@@ -1,5 +1,5 @@
 CREATE TABLE users (
-	"id" SERIAL PRIMARY KEY,
+	"id" SERIAL PRIMARY KEY NOT NULL,
 	"name" TEXT NOT NULL,
 	"email" TEXT UNIQUE NOT NULL,
 	"password" TEXT NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE users (
 );
 
 CREATE TABLE posts (
-	"id" SERIAL PRIMARY KEY,
+	"id" TEXT PRIMARY KEY,
 	"text" TEXT,
 	"link" TEXT NOT NULL,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
@@ -18,7 +18,7 @@ CREATE TABLE posts (
 CREATE TABLE "userLikes" (
 	"id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
-	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
+	"postId" TEXT NOT NULL REFERENCES "posts"("id"),
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
@@ -30,7 +30,7 @@ CREATE TABLE hashtags (
 
 CREATE TABLE "postHashtags" (
 	"id" SERIAL PRIMARY KEY,
-	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
+	"postId" TEXT NOT NULL REFERENCES "posts"("id"),
 	"hashtagId" INTEGER NOT NULL REFERENCES "hashtags"("id"),
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
