@@ -39,27 +39,46 @@ export async function verifyHashtags(req, res, next){
 export async function createHashtag(req, res, next){
 
     const {hashtags , hashtagsToCreate} = res.locals;
-
+    
     if(hashtags.length === 0){
       next();
     }else{
       if(hashtagsToCreate.length !== 0){
-        const newHashtagsIds = hashtagRepository.insertHashtags(hashtagsToCreate);
-
-        newHashtagsIds.then(r => {
-          console.log(r);
-
-          //if(r === [] || r.[0] === 'erro')
-          next();
-        });
-
-        newHashtagsIds.catch(err =>{
-          console.log(err);
-          res.statusSend(404);
-        });
         
-      }
-    }
+        let contador = 0;
+        
+        hashtagsToCreate.map(hashtag => {
+          const newHashtag =  db.query(`
+           INSERT INTO hashtags (name)
+           VALUES ($1)` 
+           , [hashtag]);
+       
+          
+          newHashtag.then(() => {
+          contador++;
+          
+            if(contador === hashtagsToCreate.length){
+              const newHashtagsIds = hashtagRepository.getHashtags(hashtagsToCreate);
+    
+              newHashtagsIds.then(r =>{
+                res.locals.hashtagIds = [...res.locals.hashtagIds, ...r.hashtagIds]
+                
+                next();
+              });
+              newHashtagsIds.catch(err => {
+                console.log(err);
+                res.statusSend(404)
+              });
+            }
+             
+          });
+           newHashtag.catch(err => {
+             console.log(err);
+             res.statusSend(404);
+           });
+        }); 
+     }
+    }    
   }
 
   export async function relRegisterPostHashtags(req, res, next){

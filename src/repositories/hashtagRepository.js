@@ -40,42 +40,9 @@ async function getHashtags(hashtags){
     }
 }
 
-async function insertHashtags(hashtagsNames){
-
-  let contador = 0;
-  
-    hashtagsNames.map(hashtag => {
-      const newHashtag =  db.query(`
-      INSERT INTO hashtags (name)
-      VALUES ($1)` 
-      , [hashtag]);
-  
-      newHashtag.then(() => {
-        contador++;
-
-        if(contador === hashtagsNames.length){
-          const newHashtagsIds = getHashtags(hashtagsNames);
-
-          newHashtagsIds.then(r =>{
-            return r.hashtagIds;
-          });
-          newHashtagsIds.catch(err => {
-            console.log(err);
-            return ['erro'];
-          });
-        }
-        
-      });
-      newHashtag.catch(err => {
-        console.log(err);
-        return ['erro'];
-      });
-    }); 
-}
-
 const hashtagRepository = {
-    getHashtags,
-    insertHashtags
+  getHashtags,
+  //deleteHashtagHistoric
 };
 
 export default hashtagRepository;
