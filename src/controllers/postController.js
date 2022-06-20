@@ -3,6 +3,7 @@ import getMetaData from "metadata-scraper";
 import { v4 as uuid } from "uuid";
 import likeRepository from "../repositories/likeRepository.js";
 import userRepository from "../repositories/userRepository.js";
+import hashtagRepository from "../repositories/hashtagRepository.js";
 
 export function createPostId(req, res, next) {
   res.locals.postId = uuid();
@@ -30,6 +31,7 @@ export async function deletePost(req, res) {
 
   try {
     await likeRepository.deleteLikesByPostId(postId);
+    await hashtagRepository.deleteHashtagHistoric(postId);
     await postRepository.deletePost(postId);
 
     res.status(204).send("Deletado com sucesso");
@@ -43,24 +45,26 @@ export async function getTimeline(req, res) {
   const { id } = req.params;
   try {
     const userDb = await userRepository.getUserById(id);
-    const postsDB = !id ?  await postRepository.getTimeline() : await postRepository.getUserTimeline(id);
+    const postsDB = !id
+      ? await postRepository.getTimeline()
+      : await postRepository.getUserTimeline(id);
     const posts = postsDB.rows;
     const newPosts = [];
     let user = null;
-    if(userDb.rowCount>0){
+    if (userDb.rowCount > 0) {
       user = userDb.rows[0];
-    } 
+    }
     for (let post of posts) {
       const data = await getMetaData(post.link);
       newPosts.push({
         ...post,
         title: data.title,
         description: data.description,
-        image: data.image,
+        image: data.image
       });
     }
 
-    res.send({user, newPosts});
+    res.send({ user, newPosts });
   } catch (error) {
     res.sendStatus(500);
     console.log("There's something wrong in postController: " + error);
