@@ -40,9 +40,35 @@ async function getHashtags(hashtags){
     }
 }
 
+// async function insertHashtags(){}
+
+async function insertRelPostHashtags(postId , hashtagId){
+  // hashtagId = parseInt(hashtagId);
+  // postId = string(postId);
+  return(
+    //hashtagIds.map(hashtagId => {
+      db.query(`
+        INSERT INTO "postHashtags" ("postId" , "hashtagId")
+        VALUES ($1 , $2)` 
+        , [postId.toString(), hashtagId])
+   // })
+  )
+
+}
+
+function deleteHashtagHistoric(postId) {
+  return db.query(
+    `
+    DELETE FROM "postHashtags" WHERE "postId" = $1
+  `,
+    [postId]
+  );
+} 
+
 const hashtagRepository = {
   getHashtags,
-  //deleteHashtagHistoric
+  insertRelPostHashtags,
+  deleteHashtagHistoric
 };
 
 export default hashtagRepository;

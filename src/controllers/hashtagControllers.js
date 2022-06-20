@@ -13,6 +13,7 @@ export async function identifyHashtags(req, res, next){
     });
     
     res.locals.hashtags = hashtags;
+
     next();
   }
   
@@ -81,10 +82,19 @@ export async function createHashtag(req, res, next){
     }    
   }
 
-  export async function relRegisterPostHashtags(req, res, next){
+  // export async function createHashtag(req, res, next){}
 
-    const {hashtags , hashtagsToCreate} = res.locals;
-  
-    next();
-    
+  export async function relRegisterPostHashtags(req, res){
+
+    const {postId , hashtagIds} = res.locals;
+
+    try{
+      hashtagIds.map(hashtagId => {
+        const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(postId , hashtagId);
+      });
+      res.status(201).send("Post publicado com sucesso.");
+    }catch(err){
+      console.log(err);
+      res.statusSend(404);
+    }    
   }
