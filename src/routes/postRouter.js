@@ -8,7 +8,7 @@ import {
   updatePost,
 } from "../controllers/postController.js";
 
-import { identifyHashtags, verifyHashtags, createHashtag } from "../controllers/hashtagControllers.js";
+import { identifyHashtags, verifyHashtags, createHashtag, relRegisterPostHashtags } from "../controllers/hashtagControllers.js";
 
 import authValidator from "../middlewares/authValidator.js";
 import schemaValidator from "../middlewares/schemaValidator.js";
@@ -26,6 +26,7 @@ postRouter.post(
   identifyHashtags,
   verifyHashtags,
   createHashtag,
+  relRegisterPostHashtags,
   publishPost
 );
 

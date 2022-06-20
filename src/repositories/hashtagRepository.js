@@ -13,10 +13,10 @@ async function getHashtags(hashtags){
 
       hashtagWhere = hashtagWhere.join(' or ');
       query = query + hashtagWhere;
-
+  
       try {
         const reqHashtags = await db.query(query);
-
+        
         reqHashtags.rows.map(hashtag => {
             hashtagsExisting.hashtagIds.push(hashtag.id);
             hashtagsExisting.names.push(hashtag.name);
@@ -35,27 +35,42 @@ async function getHashtags(hashtags){
 
       }catch(err){
         console.log(err);
+        return [];
       }
     }
-    return [];
 }
 
 async function insertHashtags(hashtagsNames){
 
-  try{
-    await hashtagsNames.map(hashtag => {
+  let contador = 0;
+  
+    hashtagsNames.map(hashtag => {
       const newHashtag =  db.query(`
       INSERT INTO hashtags (name)
       VALUES ($1)` 
       , [hashtag]);
-      
-    });
+  
+      newHashtag.then(() => {
+        contador++;
 
-    console.log("funfou");
-  }catch(err){
-    console.log(err);
-    return [];
-  }
+        if(contador === hashtagsNames.length){
+          const newHashtagsIds = getHashtags(hashtagsNames);
+
+          newHashtagsIds.then(r =>{
+            return r.hashtagIds;
+          });
+          newHashtagsIds.catch(err => {
+            console.log(err);
+            return ['erro'];
+          });
+        }
+        
+      });
+      newHashtag.catch(err => {
+        console.log(err);
+        return ['erro'];
+      });
+    }); 
 }
 
 const hashtagRepository = {

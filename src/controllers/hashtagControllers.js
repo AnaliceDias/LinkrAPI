@@ -1,4 +1,5 @@
 import hashtagRepository from "../repositories/hashtagRepository.js";
+import db from "../../config/db.js";
 
 export async function identifyHashtags(req, res, next){
     let texto = req.body.text.split(' ');
@@ -36,18 +37,35 @@ export async function verifyHashtags(req, res, next){
   }
   
 export async function createHashtag(req, res, next){
-    const hashtags = res.locals.hashtags;
-    const {hashtagsToCreate} = res.locals;
 
-    hashtagRepository.insertHashtags(hashtagsToCreate);
+    const {hashtags , hashtagsToCreate} = res.locals;
 
     if(hashtags.length === 0){
       next();
     }else{
-      //inserir no banco as hashtags novas
-      //solicitar ao banco od das novas hashtags
-      // adicionar esses ids na lista dos ids de hashtags
-      
-      next();
+      if(hashtagsToCreate.length !== 0){
+        const newHashtagsIds = hashtagRepository.insertHashtags(hashtagsToCreate);
+
+        newHashtagsIds.then(r => {
+          console.log(r);
+
+          //if(r === [] || r.[0] === 'erro')
+          next();
+        });
+
+        newHashtagsIds.catch(err =>{
+          console.log(err);
+          res.statusSend(404);
+        });
+        
+      }
     }
+  }
+
+  export async function relRegisterPostHashtags(req, res, next){
+
+    const {hashtags , hashtagsToCreate} = res.locals;
+  
+    next();
+    
   }
