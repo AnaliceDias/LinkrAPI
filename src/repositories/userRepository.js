@@ -21,8 +21,14 @@ async function getUserName(userId){
 }
 
 async function getUserByCharacter(character){
-    return db.query(`SELECT name, picture, id FROM users WHERE NAME LIKE $1`, [`${character}%`])
-}    
+   
+    return db.query(`SELECT * FROM users WHERE NAME LIKE $1`, [`${character}%`])
+}   
+
+async function getUserById(userId){
+   
+  return db.query(`SELECT * FROM users WHERE id = $1`, [userId])
+}  
 
 async function getUser(userId){  
   console.log(userId)
@@ -37,8 +43,7 @@ const userRepository = {
   createUser,
   getUserName,
   getUserByCharacter,
-  getUser,
-
+  getUserById
 }
 
 export default userRepository
