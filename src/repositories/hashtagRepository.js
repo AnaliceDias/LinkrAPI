@@ -40,42 +40,35 @@ async function getHashtags(hashtags){
     }
 }
 
-async function insertHashtags(hashtagsNames){
+// async function insertHashtags(){}
 
-  let contador = 0;
-  
-    hashtagsNames.map(hashtag => {
-      const newHashtag =  db.query(`
-      INSERT INTO hashtags (name)
-      VALUES ($1)` 
-      , [hashtag]);
-  
-      newHashtag.then(() => {
-        contador++;
+async function insertRelPostHashtags(postId , hashtagId){
+  // hashtagId = parseInt(hashtagId);
+  // postId = string(postId);
+  return(
+    //hashtagIds.map(hashtagId => {
+      db.query(`
+        INSERT INTO "postHashtags" ("postId" , "hashtagId")
+        VALUES ($1 , $2)` 
+        , [postId.toString(), hashtagId])
+   // })
+  )
 
-        if(contador === hashtagsNames.length){
-          const newHashtagsIds = getHashtags(hashtagsNames);
-
-          newHashtagsIds.then(r =>{
-            return r.hashtagIds;
-          });
-          newHashtagsIds.catch(err => {
-            console.log(err);
-            return ['erro'];
-          });
-        }
-        
-      });
-      newHashtag.catch(err => {
-        console.log(err);
-        return ['erro'];
-      });
-    }); 
 }
 
+function deleteHashtagHistoric(postId) {
+  return db.query(
+    `
+    DELETE FROM "postHashtags" WHERE "postId" = $1
+  `,
+    [postId]
+  );
+} 
+
 const hashtagRepository = {
-    getHashtags,
-    insertHashtags
+  getHashtags,
+  insertRelPostHashtags,
+  deleteHashtagHistoric
 };
 
 export default hashtagRepository;

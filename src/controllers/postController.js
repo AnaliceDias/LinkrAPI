@@ -4,13 +4,14 @@ import { v4 as uuid } from "uuid";
 import likeRepository from "../repositories/likeRepository.js";
 import userRepository from "../repositories/userRepository.js";
 import followRepository from "../repositories/followRepository.js";
+import hashtagRepository from "../repositories/hashtagRepository.js";
 
 export function createPostId(req, res, next) {
   res.locals.postId = uuid();
   next();
 }
 
-export async function publishPost(req, res) {
+export async function publishPost(req, res, next) {
   const { link } = req.body;
   let text = req.body.text;
   const userId = res.locals.user;
@@ -19,7 +20,7 @@ export async function publishPost(req, res) {
 
   try {
     await postRepository.insertPost(postId, text, link, userId);
-    res.status(201).send("Post publicado com sucesso.");
+    next();
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
@@ -31,6 +32,7 @@ export async function deletePost(req, res) {
 
   try {
     await likeRepository.deleteLikesByPostId(postId);
+    await hashtagRepository.deleteHashtagHistoric(postId);
     await postRepository.deletePost(postId);
 
     res.status(204).send("Deletado com sucesso");
@@ -76,16 +78,16 @@ export async function getUserPosts(req, res) {
     const posts = postsDB.rows;
     const newPosts = [];
     let user = null;
-    if(userDb.rowCount>0){
+    if (userDb.rowCount > 0) {
       user = userDb.rows[0];
-    } 
+    }
     for (let post of posts) {
       const data = await getMetaData(post.link);
       newPosts.push({
         ...post,
         title: data.title,
         description: data.description,
-        image: data.image,
+        image: data.image
       });
     }
     res.send({user, newPosts});

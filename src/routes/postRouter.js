@@ -27,8 +27,8 @@ postRouter.post(
   identifyHashtags,
   verifyHashtags,
   createHashtag,
-  relRegisterPostHashtags,
-  publishPost
+  publishPost,
+  relRegisterPostHashtags
 );
 
 postRouter.delete(
