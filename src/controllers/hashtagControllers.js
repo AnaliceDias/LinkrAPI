@@ -2,7 +2,9 @@ import hashtagRepository from "../repositories/hashtagRepository.js";
 import db from "../../config/db.js";
 
 export async function identifyHashtags(req, res, next){
-    let texto = req.body.text.split(' ');
+    let texto = req.body.text.split('\n');
+    texto = texto.join(' ');
+    texto = texto.split(' ');
     let hashtags = [];
     let hashtag;
     texto.map(t => {
@@ -20,7 +22,7 @@ export async function identifyHashtags(req, res, next){
 export async function verifyHashtags(req, res, next){
     const hashtags = res.locals.hashtags;
 
-    if(hashtags.length === 0){
+    if(hashtags.length === 0 || hashtags === undefined){
         next();
     }else{
         try{
@@ -40,11 +42,11 @@ export async function verifyHashtags(req, res, next){
 export async function createHashtag(req, res, next){
 
     const {hashtags , hashtagsToCreate} = res.locals;
-    
+
     if(hashtags.length === 0){
       next();
     }else{
-      if(hashtagsToCreate.length !== 0){
+      if(hashtagsToCreate.length !== 0 || hashtagsToCreate !== undefined){
         
         let contador = 0;
         
@@ -63,7 +65,6 @@ export async function createHashtag(req, res, next){
     
               newHashtagsIds.then(r =>{
                 res.locals.hashtagIds = [...res.locals.hashtagIds, ...r.hashtagIds]
-                
                 next();
               });
               newHashtagsIds.catch(err => {
@@ -78,23 +79,31 @@ export async function createHashtag(req, res, next){
              res.statusSend(404);
            });
         }); 
+     }else{
+      next();
      }
     }    
   }
 
   // export async function createHashtag(req, res, next){}
 
-  export async function relRegisterPostHashtags(req, res){
+export async function relRegisterPostHashtags(req, res){
 
-    const {postId , hashtagIds} = res.locals;
-
+  const {hashtags , postId , hashtagIds} = res.locals;
+  
+  if(hashtags.length === 0){
+    res.status(201).send("Post publicado com sucesso.");
+  }else{
     try{
       hashtagIds.map(hashtagId => {
         const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(postId , hashtagId);
       });
+
       res.status(201).send("Post publicado com sucesso.");
+
     }catch(err){
       console.log(err);
       res.statusSend(404);
     }    
   }
+}
