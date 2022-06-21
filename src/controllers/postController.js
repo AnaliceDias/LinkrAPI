@@ -3,6 +3,7 @@ import getMetaData from "metadata-scraper";
 import { v4 as uuid } from "uuid";
 import likeRepository from "../repositories/likeRepository.js";
 import userRepository from "../repositories/userRepository.js";
+import followRepository from "../repositories/followRepository.js";
 
 export function createPostId(req, res, next) {
   res.locals.postId = uuid();
@@ -40,10 +41,38 @@ export async function deletePost(req, res) {
 }
 
 export async function getTimeline(req, res) {
+  const userId = res.locals.user;
+  try {
+    const following = await followRepository.chekQttFollowing(userId);
+    
+    if(following.rowCount === 0) return res.send({following: 0, newPosts: []}).status(200);
+
+    const postsDB = await postRepository.getTimeline(userId);
+    const posts = postsDB.rows;
+    const newPosts = [];    
+    for (let post of posts) {
+      const data = await getMetaData(post.link);
+      newPosts.push({
+        ...post,
+        title: data.title,
+        description: data.description,
+        image: data.image,
+      });
+    }
+
+    return res.send({following: following.rows[0].following, newPosts}).status(200);
+    
+  } catch (error) {
+    res.sendStatus(500);
+    console.log("There's something wrong in postController: " + error);
+  }
+}
+
+export async function getUserPosts(req, res) {
   const { id } = req.params;
   try {
     const userDb = await userRepository.getUserById(id);
-    const postsDB = !id ?  await postRepository.getTimeline() : await postRepository.getUserTimeline(id);
+    const postsDB = await postRepository.getUserTimeline(id);
     const posts = postsDB.rows;
     const newPosts = [];
     let user = null;
@@ -59,7 +88,6 @@ export async function getTimeline(req, res) {
         image: data.image,
       });
     }
-
     res.send({user, newPosts});
   } catch (error) {
     res.sendStatus(500);
