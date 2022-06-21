@@ -10,7 +10,7 @@ export function createPostId(req, res, next) {
   next();
 }
 
-export async function publishPost(req, res) {
+export async function publishPost(req, res, next) {
   const { link } = req.body;
   let text = req.body.text;
   const userId = res.locals.user;
@@ -19,7 +19,7 @@ export async function publishPost(req, res) {
 
   try {
     await postRepository.insertPost(postId, text, link, userId);
-    res.status(201).send("Post publicado com sucesso.");
+    next();
   } catch (error) {
     console.log(error);
     res.sendStatus(500);
