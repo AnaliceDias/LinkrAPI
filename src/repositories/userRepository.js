@@ -30,14 +30,6 @@ async function getUserById(userId){
   return db.query(`SELECT * FROM users WHERE id = $1`, [userId])
 }  
 
-async function getUser(userId){  
-  console.log(userId)
-  return db.query(
-    `SELECT * FROM posts WHERE posts."userId" = $1`,
-    [userId]
-  )
-}
-
 const userRepository = {
   getUserByEmail,
   createUser,
