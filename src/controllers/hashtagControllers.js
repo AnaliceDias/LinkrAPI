@@ -15,7 +15,7 @@ export async function identifyHashtags(req, res, next){
     });
     
     res.locals.hashtags = hashtags;
-
+    
     next();
   }
   
@@ -29,7 +29,7 @@ export async function verifyHashtags(req, res, next){
             let verifiedHashtags = await hashtagRepository.getHashtags(hashtags);
             res.locals.hashtagsToCreate = verifiedHashtags.hashtagsToCreate;
             res.locals.hashtagIds = verifiedHashtags.hashtagIds;
-
+            
             next();
 
         }catch(err){
@@ -46,8 +46,8 @@ export async function createHashtag(req, res, next){
     if(hashtags.length === 0){
       next();
     }else{
-      if(hashtagsToCreate.length !== 0 || hashtagsToCreate !== undefined){
-        
+      if(hashtagsToCreate.length !== 0 && hashtagsToCreate !== undefined && hashtagsToCreate !== []){
+
         let contador = 0;
         
         hashtagsToCreate.map(hashtag => {
