@@ -34,3 +34,10 @@ CREATE TABLE "postHashtags" (
 	"hashtagId" INTEGER NOT NULL REFERENCES "hashtags"("id"),
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE follows (
+	"id" SERIAL PRIMARY KEY,
+	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
+	"followId" INTEGER NOT NULL REFERENCES "users"("id"),
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
