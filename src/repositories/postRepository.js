@@ -31,14 +31,17 @@ async function deletePost(postId) {
   );
 }
 
-async function getTimeline() {
+async function getTimeline(userId) {
   return db.query(
     `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
     FROM posts p
     JOIN users u
     ON u.id=p."userId"
+    JOIN follows f
+    ON f."followId" = p."userId"
+    WHERE f."userId" = $1
     ORDER BY p."createdAt" DESC
-    LIMIT 20`
+    LIMIT 20`, [userId]
   );
 }
 

@@ -9,6 +9,16 @@ async function checkIsFollowing(userId, followId) {
   );
 }
 
+async function chekQttFollowing(userId){
+    return db.query(
+        `
+        SELECT COUNT(follows."followId") as "following" FROM follows
+        WHERE follows."userId" = $1
+        GROUP BY follows."userId"`,
+        [userId]
+    );
+}
+
 async function followUser(userId, followId){
     return db.query(
         `
@@ -28,7 +38,8 @@ async function unfollowUser(userId, followId){
 const followRepository = {
     checkIsFollowing,
     followUser,
-    unfollowUser
+    unfollowUser,
+    chekQttFollowing
 };
 
 export default followRepository;
