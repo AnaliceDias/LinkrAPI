@@ -47,10 +47,9 @@ export async function verifyHashtags(req, res, next){
             res.statusSend(404);
         }
     }
-  }
-  
-export async function createHashtag(req, res, next){
+}
 
+export async function createHashtag(req, res, next){
     const {hashtags , hashtagsToCreate} = res.locals;
 
     if(hashtags.length === 0){
