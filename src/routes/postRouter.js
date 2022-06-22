@@ -6,6 +6,7 @@ import {
   getTimeline,
   createPostId,
   updatePost,
+  getUserPosts,
 } from "../controllers/postController.js";
 
 import { identifyHashtags, verifyHashtags, createHashtag, relRegisterPostHashtags } from "../controllers/hashtagControllers.js";
@@ -37,8 +38,8 @@ postRouter.delete(
   deletePost
 );
 
-postRouter.get("/timeline", getTimeline);
-postRouter.get("/user/:id", getTimeline);
+postRouter.get("/timeline", authValidator, getTimeline);
+postRouter.get("/user/:id", getUserPosts);
 
 postRouter.put("/timeline/:postId", authValidator, schemaValidator(updateSchema), updatePost);
 
