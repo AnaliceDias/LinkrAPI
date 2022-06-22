@@ -2,22 +2,31 @@ import hashtagRepository from "../repositories/hashtagRepository.js";
 import db from "../../config/db.js";
 
 export async function identifyHashtags(req, res, next){
-    let texto = req.body.text.split('\n');
-    texto = texto.join(' ');
-    texto = texto.split(' ');
-    let hashtags = [];
-    let hashtag;
-    texto.map(t => {
-      if(t.length !== 1 && t[0] === "#"){
-        hashtag = t.split('#')[1];
-        hashtags.push(hashtag);
-      }
-    });
-    
-    res.locals.hashtags = hashtags;
-    
-    next();
-  }
+  res.locals.hashtags = [];
+ 
+  let texto = req.body.text.split('\n');
+  texto = texto.join('');
+  texto = texto.split(' ');
+
+  let hashtags = [];
+  let hashtag;
+  
+  texto.map(t =>{
+    if(t[0] === "#"){
+      hashtags.push(t);
+    }
+  });
+
+  hashtags.map(hashtag => {
+    let h = ""
+    if(hashtag !== ' ' && hashtag !== ''){
+      
+      res.locals.hashtags.push(hashtag.replace('#' , ""));
+    }
+  })
+  console.log(res.locals.hashtags)
+  next();
+}
   
 export async function verifyHashtags(req, res, next){
     const hashtags = res.locals.hashtags;
@@ -85,7 +94,7 @@ export async function createHashtag(req, res, next){
     }    
   }
 
-  // export async function createHashtag(req, res, next){}
+// export async function createHashtag(req, res, next){}
 
 export async function relRegisterPostHashtags(req, res){
 
@@ -105,5 +114,18 @@ export async function relRegisterPostHashtags(req, res){
       console.log(err);
       res.statusSend(404);
     }    
+  }
+}
+
+export async function getPostsWithHashtag(req, res){
+  const {hashtag} = req.params
+  
+  try{
+    const posts = await hashtagRepository.getPostsWithHashtag(hashtag)
+    res.send(posts.rows);
+
+  }catch(err){
+    console.log(err);
+    res.statusSend(404);
   }
 }

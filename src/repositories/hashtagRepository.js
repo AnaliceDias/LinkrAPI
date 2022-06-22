@@ -43,17 +43,27 @@ async function getHashtags(hashtags){
 // async function insertHashtags(){}
 
 async function insertRelPostHashtags(postId , hashtagId){
-  // hashtagId = parseInt(hashtagId);
-  // postId = string(postId);
+
   return(
-    //hashtagIds.map(hashtagId => {
       db.query(`
         INSERT INTO "postHashtags" ("postId" , "hashtagId")
         VALUES ($1 , $2)` 
         , [postId.toString(), hashtagId])
-   // })
   )
 
+}
+
+async function getPostsWithHashtag(hashtagName){
+  return (
+    db.query(`
+    SELECT posts.id , posts.text , posts.link, posts."userId" FROM posts
+    JOIN "postHashtags"
+    ON "postId" = posts.id
+    JOIN hashtags
+    ON "hashtagId" = hashtags.id
+    WHERE hashtags.name = $1
+    `, [hashtagName])
+  )
 }
 
 function deleteHashtagHistoric(postId) {
@@ -68,6 +78,7 @@ function deleteHashtagHistoric(postId) {
 const hashtagRepository = {
   getHashtags,
   insertRelPostHashtags,
+  getPostsWithHashtag,
   deleteHashtagHistoric
 };
 
