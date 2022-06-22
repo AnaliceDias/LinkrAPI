@@ -1,5 +1,6 @@
 import hashtagRepository from "../repositories/hashtagRepository.js";
 import db from "../../config/db.js";
+import getMetaData from "metadata-scraper";
 
 export async function identifyHashtags(req, res, next){
   res.locals.hashtags = [];
@@ -24,7 +25,7 @@ export async function identifyHashtags(req, res, next){
       res.locals.hashtags.push(hashtag.replace('#' , ""));
     }
   })
-  console.log(res.locals.hashtags)
+
   next();
 }
   
@@ -119,11 +120,33 @@ export async function relRegisterPostHashtags(req, res){
 
 export async function getPostsWithHashtag(req, res){
   const {hashtag} = req.params
-  
+  let newPosts = []
+ 
   try{
     const posts = await hashtagRepository.getPostsWithHashtag(hashtag)
-    res.send(posts.rows);
+    const getPosts = posts.rows
 
+    getPosts.map(post => {
+    const data = getMetaData(post.link);
+
+    data.then(imageLink => {
+      newPosts.push({...post , image: imageLink.image});
+
+      res.send({
+      newPosts: [...newPosts]
+      });
+    })
+
+    data.catch((r) => {
+      newPosts.push({...post});
+      console.log(r);
+
+      res.send({
+        newPosts: [...newPosts]
+      });
+    })
+      
+  })
   }catch(err){
     console.log(err);
     res.statusSend(404);

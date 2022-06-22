@@ -4,7 +4,6 @@ import authValidator from "../middlewares/authValidator.js";
 
 const hashtagsRouter = Router();
 
-hashtagsRouter.post("/hashtag" , authValidator);
 hashtagsRouter.get("/hashtag/:hashtag" , authValidator , getPostsWithHashtag);
 hashtagsRouter.get("/hashtag/trending");
 

@@ -56,12 +56,16 @@ async function insertRelPostHashtags(postId , hashtagId){
 async function getPostsWithHashtag(hashtagName){
   return (
     db.query(`
-    SELECT posts.id , posts.text , posts.link, posts."userId" FROM posts
+    SELECT posts.id , posts.text , posts.link,  users.name,  users.picture  , posts."userId" , hashtags.name as title
+    FROM posts
     JOIN "postHashtags"
     ON "postId" = posts.id
+    JOIN users
+    ON posts."userId" = users.id
     JOIN hashtags
     ON "hashtagId" = hashtags.id
     WHERE hashtags.name = $1
+    ORDER BY posts."createdAt" DESC
     `, [hashtagName])
   )
 }
