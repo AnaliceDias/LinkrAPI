@@ -1,18 +1,29 @@
 import hashtagRepository from "../repositories/hashtagRepository.js";
 import db from "../../config/db.js";
+import getMetaData from "metadata-scraper";
 
 export async function identifyHashtags(req, res, next) {
-  let texto = req.body.text.split(" ");
+  res.locals.hashtags = [];
+
+  let texto = req.body.text.split("\n");
+  texto = texto.join("");
+  texto = texto.split(" ");
+
   let hashtags = [];
   let hashtag;
+
   texto.map(t => {
-    if (t.length !== 1 && t[0] === "#") {
-      hashtag = t.split("#")[1];
-      hashtags.push(hashtag);
+    if (t[0] === "#") {
+      hashtags.push(t);
     }
   });
 
-  res.locals.hashtags = hashtags;
+  hashtags.map(hashtag => {
+    let h = "";
+    if (hashtag !== " " && hashtag !== "") {
+      res.locals.hashtags.push(hashtag.replace("#", ""));
+    }
+  });
 
   next();
 }
@@ -20,7 +31,7 @@ export async function identifyHashtags(req, res, next) {
 export async function verifyHashtags(req, res, next) {
   const hashtags = res.locals.hashtags;
 
-  if (hashtags.length === 0) {
+  if (hashtags.length === 0 || hashtags === undefined) {
     next();
   } else {
     try {
@@ -31,7 +42,7 @@ export async function verifyHashtags(req, res, next) {
       next();
     } catch (err) {
       console.log(err);
-      res.sendStatus(404);
+      res.statusSend(404);
     }
   }
 }
@@ -42,7 +53,11 @@ export async function createHashtag(req, res, next) {
   if (hashtags.length === 0) {
     next();
   } else {
-    if (hashtagsToCreate.length !== 0) {
+    if (
+      hashtagsToCreate.length !== 0 &&
+      hashtagsToCreate !== undefined &&
+      hashtagsToCreate !== []
+    ) {
       let contador = 0;
 
       hashtagsToCreate.map(hashtag => {
@@ -65,20 +80,21 @@ export async function createHashtag(req, res, next) {
                 ...res.locals.hashtagIds,
                 ...r.hashtagIds
               ];
-
               next();
             });
             newHashtagsIds.catch(err => {
               console.log(err);
-              res.sendStatus(404);
+              res.statusSend(404);
             });
           }
         });
         newHashtag.catch(err => {
           console.log(err);
-          res.sendStatus(404);
+          res.statusSend(404);
         });
       });
+    } else {
+      next();
     }
   }
 }
@@ -86,18 +102,57 @@ export async function createHashtag(req, res, next) {
 // export async function createHashtag(req, res, next){}
 
 export async function relRegisterPostHashtags(req, res) {
-  const { postId, hashtagIds } = res.locals;
+  const { hashtags, postId, hashtagIds } = res.locals;
+
+  if (hashtags.length === 0) {
+    res.status(201).send("Post publicado com sucesso.");
+  } else {
+    try {
+      hashtagIds.map(hashtagId => {
+        const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(
+          postId,
+          hashtagId
+        );
+      });
+
+      res.status(201).send("Post publicado com sucesso.");
+    } catch (err) {
+      console.log(err);
+      res.statusSend(404);
+    }
+  }
+}
+
+export async function getPostsWithHashtag(req, res) {
+  const { hashtag } = req.params;
+  let newPosts = [];
 
   try {
-    hashtagIds.map(hashtagId => {
-      const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(
-        postId,
-        hashtagId
-      );
+    const posts = await hashtagRepository.getPostsWithHashtag(hashtag);
+    const getPosts = posts.rows;
+
+    getPosts.map(post => {
+      const data = getMetaData(post.link);
+
+      data.then(imageLink => {
+        newPosts.push({ ...post, image: imageLink.image });
+
+        res.send({
+          newPosts: [...newPosts]
+        });
+      });
+
+      data.catch(r => {
+        newPosts.push({ ...post });
+        console.log(r);
+
+        res.send({
+          newPosts: [...newPosts]
+        });
+      });
     });
-    res.status(201).send("Post publicado com sucesso.");
   } catch (err) {
     console.log(err);
-    res.sendStatus(404);
+    res.statusSend(404);
   }
 }

@@ -1,17 +1,11 @@
 import { Router } from "express";
+import { getPostsWithHashtag } from "../controllers/hashtagControllers.js";
 import authValidator from "../middlewares/authValidator.js";
 
 const hashtagsRouter = Router();
 
-hashtagsRouter.post("/hashtag" , authValidator);
-hashtagsRouter.get("hashtag/:hashtag");
-hashtagsRouter.get("hashtag/trending");
-
-hashtagsRouter.get("/hashtag" , authValidator , teste);
+hashtagsRouter.get("/hashtag/:hashtag" , authValidator , getPostsWithHashtag);
+hashtagsRouter.get("/hashtag/trending");
 
 export default hashtagsRouter;
-
-function teste(req , res){
-    res.send("OK");
-}
 
