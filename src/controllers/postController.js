@@ -46,12 +46,12 @@ export async function getTimeline(req, res) {
   const userId = res.locals.user;
   try {
     const following = await followRepository.chekQttFollowing(userId);
-    
-    if(following.rowCount === 0) return res.send({following: 0, newPosts: []}).status(200);
+
+    if (following.rowCount === 0) return res.send({ following: 0, newPosts: [] }).status(200);
 
     const postsDB = await postRepository.getTimeline(userId);
     const posts = postsDB.rows;
-    const newPosts = [];    
+    const newPosts = [];
     for (let post of posts) {
       const data = await getMetaData(post.link);
       newPosts.push({
@@ -62,8 +62,7 @@ export async function getTimeline(req, res) {
       });
     }
 
-    return res.send({following: following.rows[0].following, newPosts}).status(200);
-    
+    return res.send({ following: following.rows[0].following, newPosts }).status(200);
   } catch (error) {
     res.sendStatus(500);
     console.log("There's something wrong in postController: " + error);
@@ -87,10 +86,10 @@ export async function getUserPosts(req, res) {
         ...post,
         title: data.title,
         description: data.description,
-        image: data.image
+        image: data.image,
       });
     }
-    res.send({user, newPosts});
+    res.send({ user, newPosts });
   } catch (error) {
     res.sendStatus(500);
     console.log("There's something wrong in postController: " + error);

@@ -70,13 +70,13 @@ export async function createHashtag(req, res, next) {
             });
             newHashtagsIds.catch(err => {
               console.log(err);
-              res.statusSend(404);
+              res.sendStatus(404);
             });
           }
         });
         newHashtag.catch(err => {
           console.log(err);
-          res.statusSend(404);
+          res.sendStatus(404);
         });
       });
     }
@@ -98,6 +98,6 @@ export async function relRegisterPostHashtags(req, res) {
     res.status(201).send("Post publicado com sucesso.");
   } catch (err) {
     console.log(err);
-    res.statusSend(404);
+    res.sendStatus(404);
   }
 }
