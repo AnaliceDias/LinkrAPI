@@ -40,8 +40,6 @@ async function getHashtags(hashtags){
     }
 }
 
-// async function insertHashtags(){}
-
 async function insertRelPostHashtags(postId , hashtagId){
 
   return(
@@ -79,11 +77,26 @@ function deleteHashtagHistoric(postId) {
   );
 } 
 
+async function getHashtagTrending(){
+  return(
+    db.query(`
+    SELECT hashtags.name as "hashtagName", hashtags.id FROM "postHashtags"
+    JOIN hashtags
+    ON "postHashtags"."hashtagId" = hashtags.id
+    JOIN posts
+    ON "postHashtags"."postId" = posts.id
+    GROUP BY  hashtags.name, hashtags.id
+    ORDER BY count("postHashtags"."hashtagId") desc
+    LIMIT 10`)
+  )
+}
+
 const hashtagRepository = {
   getHashtags,
   insertRelPostHashtags,
   getPostsWithHashtag,
-  deleteHashtagHistoric
+  deleteHashtagHistoric,
+  getHashtagTrending
 };
 
 export default hashtagRepository;
