@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 import userRepository from "../repositories/userRepository.js";
+import followRepository from "../repositories/followRepository.js";
 
 dotenv.config();
 
@@ -40,11 +41,11 @@ export async function postSignIn(req, res) {
     // create new token
 
     const data = { userId: user.rows[0].id };
+    const image = user.rows[0].picture;
     const key = process.env.JWT_KEY;
     const config = { expiresIn: 60 * 60 }; // 60 minutes
 
     const token = jwt.sign(data, key, config);
-    const image = user.rows[0].picture;
 
     res.status(200).send({ token, image, userId: data.userId });
   } catch (e) {

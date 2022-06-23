@@ -6,9 +6,10 @@ import {
   getTimeline,
   createPostId,
   updatePost,
+  getUserPosts,
 } from "../controllers/postController.js";
 
-import { identifyHashtags, verifyHashtags, createHashtag } from "../controllers/hashtagControllers.js";
+import { identifyHashtags, verifyHashtags, createHashtag, relRegisterPostHashtags } from "../controllers/hashtagControllers.js";
 
 import authValidator from "../middlewares/authValidator.js";
 import schemaValidator from "../middlewares/schemaValidator.js";
@@ -26,7 +27,8 @@ postRouter.post(
   identifyHashtags,
   verifyHashtags,
   createHashtag,
-  publishPost
+  publishPost,
+  relRegisterPostHashtags
 );
 
 postRouter.delete(
@@ -36,8 +38,8 @@ postRouter.delete(
   deletePost
 );
 
-postRouter.get("/timeline", getTimeline);
-postRouter.get("/user/:id", getTimeline);
+postRouter.get("/timeline", authValidator, getTimeline);
+postRouter.get("/user/:id", getUserPosts);
 
 postRouter.put("/timeline/:postId", authValidator, schemaValidator(updateSchema), updatePost);
 
