@@ -12,13 +12,13 @@ export async function identifyHashtags(req, res, next) {
   let hashtags = [];
   let hashtag;
 
-  texto.map(t => {
+  texto.map((t) => {
     if (t[0] === "#") {
       hashtags.push(t);
     }
   });
 
-  hashtags.map(hashtag => {
+  hashtags.map((hashtag) => {
     let h = "";
     if (hashtag !== " " && hashtag !== "") {
       res.locals.hashtags.push(hashtag.replace("#", ""));
@@ -53,14 +53,10 @@ export async function createHashtag(req, res, next) {
   if (hashtags.length === 0) {
     next();
   } else {
-    if (
-      hashtagsToCreate.length !== 0 &&
-      hashtagsToCreate !== undefined &&
-      hashtagsToCreate !== []
-    ) {
+    if (hashtagsToCreate.length !== 0 && hashtagsToCreate !== undefined && hashtagsToCreate !== []) {
       let contador = 0;
 
-      hashtagsToCreate.map(hashtag => {
+      hashtagsToCreate.map((hashtag) => {
         const newHashtag = db.query(
           `
            INSERT INTO hashtags (name)
@@ -72,23 +68,19 @@ export async function createHashtag(req, res, next) {
           contador++;
 
           if (contador === hashtagsToCreate.length) {
-            const newHashtagsIds =
-              hashtagRepository.getHashtags(hashtagsToCreate);
+            const newHashtagsIds = hashtagRepository.getHashtags(hashtagsToCreate);
 
-            newHashtagsIds.then(r => {
-              res.locals.hashtagIds = [
-                ...res.locals.hashtagIds,
-                ...r.hashtagIds
-              ];
+            newHashtagsIds.then((r) => {
+              res.locals.hashtagIds = [...res.locals.hashtagIds, ...r.hashtagIds];
               next();
             });
-            newHashtagsIds.catch(err => {
+            newHashtagsIds.catch((err) => {
               console.log(err);
               res.statusSend(404);
             });
           }
         });
-        newHashtag.catch(err => {
+        newHashtag.catch((err) => {
           console.log(err);
           res.statusSend(404);
         });
@@ -108,11 +100,8 @@ export async function relRegisterPostHashtags(req, res) {
     res.status(201).send("Post publicado com sucesso.");
   } else {
     try {
-      hashtagIds.map(hashtagId => {
-        const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(
-          postId,
-          hashtagId
-        );
+      hashtagIds.map((hashtagId) => {
+        const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(postId, hashtagId);
       });
 
       res.status(201).send("Post publicado com sucesso.");
@@ -125,34 +114,29 @@ export async function relRegisterPostHashtags(req, res) {
 
 export async function getPostsWithHashtag(req, res) {
   const { hashtag } = req.params;
+  let { offset } = req.query;
+  if (!offset) {
+    offset = 0;
+  }
+
   let newPosts = [];
 
   try {
-    const posts = await hashtagRepository.getPostsWithHashtag(hashtag);
+    const posts = await hashtagRepository.getPostsWithHashtag(hashtag, offset);
     const getPosts = posts.rows;
 
-    getPosts.map(post => {
-      const data = getMetaData(post.link);
-
-      data.then(imageLink => {
-        newPosts.push({ ...post, image: imageLink.image });
-
-        res.send({
-          newPosts: [...newPosts]
-        });
+    for (let post of getPosts) {
+      const data = await getMetaData(post.link);
+      newPosts.push({
+        ...post,
+        title: data.title,
+        description: data.description,
+        image: data.image,
       });
-
-      data.catch(r => {
-        newPosts.push({ ...post });
-        console.log(r);
-
-        res.send({
-          newPosts: [...newPosts]
-        });
-      });
-    });
+    }
+    res.send(newPosts);
   } catch (err) {
     console.log(err);
-    res.statusSend(404);
+    res.sendStatus(404);
   }
 }
