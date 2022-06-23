@@ -35,9 +35,17 @@ CREATE TABLE "postHashtags" (
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE follows (
+CREATE TABLE "comments"(
+	"id" SERIAL PRIMARY KEY,
+	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
+	"postId" INTEGER NOT NULL REFERENCES "posts"("id"),
+	"text" TEXT NOT NULL,
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+)
+
+CREATE TABLE "follows"(
 	"id" SERIAL PRIMARY KEY,
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"followId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-);
+)
