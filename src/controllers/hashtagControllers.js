@@ -10,10 +10,9 @@ export async function identifyHashtags(req, res, next) {
   texto = texto.split(" ");
 
   let hashtags = [];
-  let hashtag;
-
-  texto.map((t) => {
-    if (t[0] === "#") {
+    
+  texto.map(t =>{
+    if(t[0] === "#"){
       hashtags.push(t);
     }
   });
@@ -47,51 +46,50 @@ export async function verifyHashtags(req, res, next) {
   }
 }
 
-export async function createHashtag(req, res, next) {
-  const { hashtags, hashtagsToCreate } = res.locals;
+export async function createHashtag(req, res, next){
+  const {hashtags , hashtagsToCreate} = res.locals;
 
-  if (hashtags.length === 0) {
+  if(hashtags.length === 0){
     next();
-  } else {
-    if (hashtagsToCreate.length !== 0 && hashtagsToCreate !== undefined && hashtagsToCreate !== []) {
+  }else{
+    if(hashtagsToCreate.length !== 0 && hashtagsToCreate !== undefined && hashtagsToCreate !== []){
+
       let contador = 0;
-
-      hashtagsToCreate.map((hashtag) => {
-        const newHashtag = db.query(
-          `
-           INSERT INTO hashtags (name)
-           VALUES ($1)`,
-          [hashtag]
-        );
-
+      
+      hashtagsToCreate.map(hashtag => {
+        const newHashtag =  db.query(`
+          INSERT INTO hashtags (name)
+          VALUES ($1)` 
+          , [hashtag]);
+      
+        
         newHashtag.then(() => {
-          contador++;
-
-          if (contador === hashtagsToCreate.length) {
+        contador++;
+        
+          if(contador === hashtagsToCreate.length){
             const newHashtagsIds = hashtagRepository.getHashtags(hashtagsToCreate);
-
-            newHashtagsIds.then((r) => {
-              res.locals.hashtagIds = [...res.locals.hashtagIds, ...r.hashtagIds];
+  
+            newHashtagsIds.then(r =>{
+              res.locals.hashtagIds = [...res.locals.hashtagIds, ...r.hashtagIds]
               next();
             });
-            newHashtagsIds.catch((err) => {
+            newHashtagsIds.catch(err => {
               console.log(err);
-              res.statusSend(404);
+              res.statusSend(404)
             });
           }
+            
         });
-        newHashtag.catch((err) => {
-          console.log(err);
-          res.statusSend(404);
-        });
-      });
-    } else {
-      next();
+          newHashtag.catch(err => {
+            console.log(err);
+            res.statusSend(404);
+          });
+      }); 
+    }else{
+    next();
     }
-  }
+  }    
 }
-
-// export async function createHashtag(req, res, next){}
 
 export async function relRegisterPostHashtags(req, res) {
   const { hashtags, postId, hashtagIds } = res.locals;
@@ -112,18 +110,46 @@ export async function relRegisterPostHashtags(req, res) {
   }
 }
 
-export async function getPostsWithHashtag(req, res) {
-  const { hashtag } = req.params;
+// export async function getPostsWithHashtag(req, res) {
+//   const { hashtag } = req.params;
+//   let { offset } = req.query;
+//   if (!offset) {
+//     offset = 0;
+//   }
+
+//   let newPosts = [];
+
+//   try {
+//     const posts = await hashtagRepository.getPostsWithHashtag(hashtag, offset);
+//     const getPosts = posts.rows;
+
+//     for (let post of getPosts) {
+//       const data = await getMetaData(post.link);
+//       newPosts.push({
+//         ...post,
+//         title: data.title,
+//         description: data.description,
+//         image: data.image,
+//       });
+//     }
+//     res.send(newPosts);
+//   } catch (err) {
+//     console.log(err);
+//     res.sendStatus(404);
+//   }
+// }
+
+export async function getPostsWithHashtag(req, res){
+  const {hashtag} = req.params;
   let { offset } = req.query;
   if (!offset) {
     offset = 0;
   }
-
   let newPosts = [];
-
-  try {
-    const posts = await hashtagRepository.getPostsWithHashtag(hashtag, offset);
-    const getPosts = posts.rows;
+ 
+  try{
+    const posts = await hashtagRepository.getPostsWithHashtag(hashtag, offset)
+    const getPosts = posts.rows
 
     for (let post of getPosts) {
       const data = await getMetaData(post.link);
@@ -131,12 +157,28 @@ export async function getPostsWithHashtag(req, res) {
         ...post,
         title: data.title,
         description: data.description,
-        image: data.image,
+        image: data.image
       });
+      console.log(newPosts)
     }
     res.send(newPosts);
-  } catch (err) {
+
+}catch(err){
     console.log(err);
     res.sendStatus(404);
+  }
+
+}
+
+export async function getHashtagTrending(req , res){
+  try{
+    const reqHashtagTrending = await hashtagRepository.getHashtagTrending();
+    const hashtagTrending = reqHashtagTrending.rows;
+    
+    res.send(hashtagTrending);
+
+  }catch(err){
+    console.log(err)
+    res.statusSend(404);
   }
 }
