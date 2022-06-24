@@ -48,4 +48,4 @@ CREATE TABLE "follows"(
 	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"followId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-)
+);

@@ -31,7 +31,7 @@ async function deletePost(postId) {
   );
 }
 
-async function getTimeline(userId) {
+async function getTimeline(userId, offset) {
   return db.query(
     `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
     FROM posts p
@@ -41,11 +41,12 @@ async function getTimeline(userId) {
     ON f."followId" = p."userId"
     WHERE f."userId" = $1
     ORDER BY p."createdAt" DESC
-    LIMIT 20`, [userId]
+    OFFSET $2
+    LIMIT 5`, [userId, offset]
   );
 }
 
-async function getUserTimeline(userId) {
+async function getUserTimeline(userId, offset) {
   return db.query(
     `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
     FROM posts p
@@ -53,7 +54,8 @@ async function getUserTimeline(userId) {
     ON u.id=p."userId"
     WHERE u.id = $1
     ORDER BY p."createdAt" DESC
-    LIMIT 20`, [userId]
+    OFFSET $2
+    LIMIT 5`, [userId, offset]
   );
 }
 
