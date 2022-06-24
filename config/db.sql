@@ -1,36 +1,65 @@
-CREATE TABLE users (
-	"id" SERIAL PRIMARY KEY NOT NULL,
+
+ CREATE TABLE "users" (
+	"id" serial NOT NULL,
 	"name" TEXT NOT NULL,
-	"email" TEXT UNIQUE NOT NULL,
+	"email" TEXT NOT NULL UNIQUE,
 	"password" TEXT NOT NULL,
 	"picture" TEXT NOT NULL,
-	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'	
 );
 
-CREATE TABLE posts (
-	"id" TEXT PRIMARY KEY,
+
+
+CREATE TABLE "posts" (
+	"id" serial NOT NULL,
 	"text" TEXT,
 	"link" TEXT NOT NULL,
-	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
-	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+	"userId" integer NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'	
 );
 
-CREATE TABLE "userLikes" (
-	"id" SERIAL PRIMARY KEY,
-	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
-	"postId" TEXT NOT NULL REFERENCES "posts"("id"),
-	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+
+
+CREATE TABLE "hashtags" (
+	"id" serial NOT NULL,
+	"name" TEXT NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'
 );
 
-CREATE TABLE hashtags (
-	"id" SERIAL PRIMARY KEY,
-	"name" TEXT UNIQUE NOT NULL,
-	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
-);
+
 
 CREATE TABLE "postHashtags" (
-	"id" SERIAL PRIMARY KEY,
-	"postId" TEXT NOT NULL REFERENCES "posts"("id"),
-	"hashtagId" INTEGER NOT NULL REFERENCES "hashtags"("id"),
-	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+	"id" serial NOT NULL,
+	"postId" integer NOT NULL,
+	"hashtagId" integer NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'
 );
+
+
+
+CREATE TABLE "userLikes" (
+	"id" serial NOT NULL,
+	"userId" integer NOT NULL,
+	"postId" integer NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'
+);
+
+
+
+CREATE TABLE "follows" (
+	"id" serial NOT NULL,
+	"userId" integer NOT NULL,
+	"followId" integer NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'	
+);
+
+
+
+CREATE TABLE "comments" (
+	"id" serial NOT NULL,
+	"userId" integer NOT NULL,
+	"postId" integer NOT NULL,
+	"text" TEXT NOT NULL,
+	"createdAt" timestamp with time zone NOT NULL DEFAULT 'NOW()'
+);
+
