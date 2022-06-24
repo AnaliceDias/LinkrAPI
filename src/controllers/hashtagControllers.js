@@ -2,12 +2,12 @@ import hashtagRepository from "../repositories/hashtagRepository.js";
 import db from "../../config/db.js";
 import getMetaData from "metadata-scraper";
 
-export async function identifyHashtags(req, res, next){
+export async function identifyHashtags(req, res, next) {
   res.locals.hashtags = [];
- 
-  let texto = req.body.text.split('\n');
-  texto = texto.join('');
-  texto = texto.split(' ');
+
+  let texto = req.body.text.split("\n");
+  texto = texto.join("");
+  texto = texto.split(" ");
 
   let hashtags = [];
     
@@ -17,35 +17,33 @@ export async function identifyHashtags(req, res, next){
     }
   });
 
-  hashtags.map(hashtag => {
-    let h = ""
-    if(hashtag !== ' ' && hashtag !== ''){
-      
-      res.locals.hashtags.push(hashtag.replace('#' , ""));
+  hashtags.map((hashtag) => {
+    let h = "";
+    if (hashtag !== " " && hashtag !== "") {
+      res.locals.hashtags.push(hashtag.replace("#", ""));
     }
-  })
+  });
 
   next();
 }
-  
-export async function verifyHashtags(req, res, next){
-    const hashtags = res.locals.hashtags;
 
-    if(hashtags.length === 0 || hashtags === undefined){
-        next();
-    }else{
-        try{
-            let verifiedHashtags = await hashtagRepository.getHashtags(hashtags);
-            res.locals.hashtagsToCreate = verifiedHashtags.hashtagsToCreate;
-            res.locals.hashtagIds = verifiedHashtags.hashtagIds;
-            
-            next();
+export async function verifyHashtags(req, res, next) {
+  const hashtags = res.locals.hashtags;
 
-        }catch(err){
-            console.log(err);
-            res.statusSend(404);
-        }
+  if (hashtags.length === 0 || hashtags === undefined) {
+    next();
+  } else {
+    try {
+      let verifiedHashtags = await hashtagRepository.getHashtags(hashtags);
+      res.locals.hashtagsToCreate = verifiedHashtags.hashtagsToCreate;
+      res.locals.hashtagIds = verifiedHashtags.hashtagIds;
+
+      next();
+    } catch (err) {
+      console.log(err);
+      res.statusSend(404);
     }
+  }
 }
 
 export async function createHashtag(req, res, next){
@@ -93,24 +91,22 @@ export async function createHashtag(req, res, next){
   }    
 }
 
-export async function relRegisterPostHashtags(req, res){
+export async function relRegisterPostHashtags(req, res) {
+  const { hashtags, postId, hashtagIds } = res.locals;
 
-  const {hashtags , postId , hashtagIds} = res.locals;
-  
-  if(hashtags.length === 0){
+  if (hashtags.length === 0) {
     res.status(201).send("Post publicado com sucesso.");
-  }else{
-    try{
-      hashtagIds.map(hashtagId => {
-        const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(postId , hashtagId);
+  } else {
+    try {
+      hashtagIds.map((hashtagId) => {
+        const newRelPostHashtag = hashtagRepository.insertRelPostHashtags(postId, hashtagId);
       });
 
       res.status(201).send("Post publicado com sucesso.");
-
-    }catch(err){
+    } catch (err) {
       console.log(err);
       res.statusSend(404);
-    }    
+    }
   }
 }
 
@@ -143,7 +139,7 @@ export async function getPostsWithHashtag(req, res){
   }) 
   }catch(err){
     console.log(err);
-    res.statusSend(404);
+    res.sendStatus(404);
   }
 
 }

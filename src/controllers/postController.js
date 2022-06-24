@@ -44,12 +44,17 @@ export async function deletePost(req, res) {
 
 export async function getTimeline(req, res) {
   const userId = res.locals.user;
+  let { offset } = req.query;
+  if (!offset) {
+    offset = 0;
+  }
+
   try {
     const following = await followRepository.chekQttFollowing(userId);
 
     if (following.rowCount === 0) return res.send({ following: 0, newPosts: [] }).status(200);
 
-    const postsDB = await postRepository.getTimeline(userId);
+    const postsDB = await postRepository.getTimeline(userId, offset);
     const posts = postsDB.rows;
     const newPosts = [];
     for (let post of posts) {
@@ -71,9 +76,14 @@ export async function getTimeline(req, res) {
 
 export async function getUserPosts(req, res) {
   const { id } = req.params;
+  let { offset } = req.query;
+  if (!offset) {
+    offset = 0;
+  }
+
   try {
     const userDb = await userRepository.getUserById(id);
-    const postsDB = await postRepository.getUserTimeline(id);
+    const postsDB = await postRepository.getUserTimeline(id, offset);
     const posts = postsDB.rows;
     const newPosts = [];
     let user = null;

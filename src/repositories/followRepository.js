@@ -9,37 +9,48 @@ async function checkIsFollowing(userId, followId) {
   );
 }
 
-async function chekQttFollowing(userId){
-    return db.query(
-        `
+async function chekQttFollowing(userId) {
+  return db.query(
+    `
         SELECT COUNT(follows."followId") as "following" FROM follows
         WHERE follows."userId" = $1
         GROUP BY follows."userId"`,
-        [userId]
-    );
+    [userId]
+  );
 }
 
-async function followUser(userId, followId){
-    return db.query(
-        `
+async function followUser(userId, followId) {
+  return db.query(
+    `
         INSERT INTO follows ("userId", "followId")
         VALUES ($1, $2)`,
-        [userId, followId]
-      );
+    [userId, followId]
+  );
 }
 
-async function unfollowUser(userId, followId){
-    return db.query(
-        `DELETE FROM follows WHERE "userId" = $1 AND "followId" = $2`,
-        [userId, followId]
-      );
+async function unfollowUser(userId, followId) {
+  return db.query(
+    `DELETE FROM follows WHERE "userId" = $1 AND "followId" = $2`,
+    [userId, followId]
+  );
+}
+
+function getFollowsByUserId(userId) {
+  return db.query(
+    `
+    SELECT "followId" FROM follows 
+    WHERE "userId" = $1
+  `,
+    [userId]
+  );
 }
 
 const followRepository = {
-    checkIsFollowing,
-    followUser,
-    unfollowUser,
-    chekQttFollowing
+  checkIsFollowing,
+  followUser,
+  unfollowUser,
+  getFollowsByUserId,
+  chekQttFollowing
 };
 
 export default followRepository;

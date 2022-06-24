@@ -51,7 +51,7 @@ async function insertRelPostHashtags(postId , hashtagId){
 
 }
 
-async function getPostsWithHashtag(hashtagName){
+async function getPostsWithHashtag(hashtagName, offset){
   return (
     db.query(`
     SELECT posts.id , posts.text , posts.link,  users.name,  users.picture  , posts."userId" , hashtags.name as title
@@ -64,7 +64,9 @@ async function getPostsWithHashtag(hashtagName){
     ON "hashtagId" = hashtags.id
     WHERE hashtags.name = $1
     ORDER BY posts."createdAt" DESC
-    `, [hashtagName])
+    OFFSET $2
+    LIMIT 5
+    `, [hashtagName, offset])
   )
 }
 
