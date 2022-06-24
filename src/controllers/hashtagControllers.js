@@ -121,32 +121,31 @@ export async function getPostsWithHashtag(req, res){
   try{
     const posts = await hashtagRepository.getPostsWithHashtag(hashtag)
     const getPosts = posts.rows
+    let i = 0;
 
     getPosts.map(post => {
     const data = getMetaData(post.link);
-
+    i++;
+    
     data.then(imageLink => {
       newPosts.push({...post , image: imageLink.image});
 
-      res.send({
-      newPosts: [...newPosts]
-      });
+      if(i === getPosts.length){
+        
+        const newPostsList = {newPosts: [...newPosts]};
+        res.send(newPostsList);
+      }
     })
-
     data.catch((r) => {
-      newPosts.push({...post});
+      newPosts.push([...post]);
       console.log(r);
-
-      res.send({
-        newPosts: [...newPosts]
-      });
     })
-      
-  })
+  }) 
   }catch(err){
     console.log(err);
     res.statusSend(404);
   }
+
 }
 
 export async function getHashtagTrending(req , res){
