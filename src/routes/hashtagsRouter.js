@@ -7,5 +7,4 @@ const hashtagsRouter = Router();
 hashtagsRouter.get("/hashtag" , getHashtagTrending);
 hashtagsRouter.get("/hashtag/:hashtag" , authValidator , getPostsWithHashtag);
 
-
 export default hashtagsRouter;

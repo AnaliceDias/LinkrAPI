@@ -110,34 +110,60 @@ export async function relRegisterPostHashtags(req, res) {
   }
 }
 
+// export async function getPostsWithHashtag(req, res) {
+//   const { hashtag } = req.params;
+//   let { offset } = req.query;
+//   if (!offset) {
+//     offset = 0;
+//   }
+
+//   let newPosts = [];
+
+//   try {
+//     const posts = await hashtagRepository.getPostsWithHashtag(hashtag, offset);
+//     const getPosts = posts.rows;
+
+//     for (let post of getPosts) {
+//       const data = await getMetaData(post.link);
+//       newPosts.push({
+//         ...post,
+//         title: data.title,
+//         description: data.description,
+//         image: data.image,
+//       });
+//     }
+//     res.send(newPosts);
+//   } catch (err) {
+//     console.log(err);
+//     res.sendStatus(404);
+//   }
+// }
+
 export async function getPostsWithHashtag(req, res){
-  const {hashtag} = req.params
+  const {hashtag} = req.params;
+  let { offset } = req.query;
+  if (!offset) {
+    offset = 0;
+  }
   let newPosts = [];
  
   try{
-    const posts = await hashtagRepository.getPostsWithHashtag(hashtag)
+    const posts = await hashtagRepository.getPostsWithHashtag(hashtag, offset)
     const getPosts = posts.rows
-    let i = 0;
 
-    getPosts.map(post => {
-    const data = getMetaData(post.link);
-    i++;
-    
-    data.then(imageLink => {
-      newPosts.push({...post , image: imageLink.image});
+    for (let post of getPosts) {
+      const data = await getMetaData(post.link);
+      newPosts.push({
+        ...post,
+        title: data.title,
+        description: data.description,
+        image: data.image
+      });
+      console.log(newPosts)
+    }
+    res.send(newPosts);
 
-      if(i === getPosts.length){
-        
-        const newPostsList = {newPosts: [...newPosts]};
-        res.send(newPostsList);
-      }
-    })
-    data.catch((r) => {
-      newPosts.push([...post]);
-      console.log(r);
-    })
-  }) 
-  }catch(err){
+}catch(err){
     console.log(err);
     res.sendStatus(404);
   }
