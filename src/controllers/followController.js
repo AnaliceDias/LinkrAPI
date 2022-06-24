@@ -39,7 +39,6 @@ export async function followUser(req, res) {
 
 export async function getFollows(req, res) {
   const userId = res.locals.user;
-  console.log(userId);
 
   try {
     const follows = await followRepository.getFollowsByUserId(userId);
