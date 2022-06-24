@@ -18,9 +18,19 @@ async function countReposts(postId) {
   );
 }
 
+async function deleteRepostByPostId(postId) {
+  return db.query(
+    `
+        DELETE FROM "userReposts" WHERE "postId" = $1
+    `,
+    [postId]
+  );
+}
+
 const repostRepository = {
     createRepost,
     countReposts,
+    deleteRepostByPostId
 };
 
 export default repostRepository;

@@ -5,6 +5,7 @@ import likeRepository from "../repositories/likeRepository.js";
 import userRepository from "../repositories/userRepository.js";
 import followRepository from "../repositories/followRepository.js";
 import hashtagRepository from "../repositories/hashtagRepository.js";
+import repostRepository from "../repositories/repostRepository.js";
 
 export function createPostId(req, res, next) {
   res.locals.postId = uuid();
@@ -33,6 +34,7 @@ export async function deletePost(req, res) {
   try {
     await likeRepository.deleteLikesByPostId(postId);
     await hashtagRepository.deleteHashtagHistoric(postId);
+    await repostRepository.deleteRepostByPostId(postId);
     await postRepository.deletePost(postId);
 
     res.status(204).send("Deletado com sucesso");
