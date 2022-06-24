@@ -33,14 +33,25 @@ async function deletePost(postId) {
 
 async function getTimeline(userId, offset) {
   return db.query(
-    `SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId"
+    `(SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId", ur."createdAt", ur."userId" as "userReposted"
+    FROM "userReposts" ur
+    JOIN posts p ON ur."postId" = p.id
+    JOIN users u
+    ON u.id=p."userId"
+    JOIN follows f
+    ON f."followId" = ur."userId"
+    WHERE f."userId" = $1 
+    )       
+    UNION all
+    (SELECT p.id AS id, p.text AS text, p.link AS link, u.name AS name, u.picture, u.id as "userId", p."createdAt", null
     FROM posts p
     JOIN users u
     ON u.id=p."userId"
     JOIN follows f
     ON f."followId" = p."userId"
     WHERE f."userId" = $1
-    ORDER BY p."createdAt" DESC
+    )
+    ORDER BY "createdAt" DESC
     OFFSET $2
     LIMIT 5`, [userId, offset]
   );

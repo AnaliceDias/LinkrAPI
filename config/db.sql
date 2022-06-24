@@ -49,3 +49,10 @@ CREATE TABLE "follows"(
 	"followId" INTEGER NOT NULL REFERENCES "users"("id"),
 	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE "userReposts" (
+	"id" SERIAL PRIMARY KEY,
+	"userId" INTEGER NOT NULL REFERENCES "users"("id"),
+	"postId" TEXT NOT NULL REFERENCES "posts"("id"),
+	"createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
